@@ -1,0 +1,98 @@
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+  <modelVersion>4.0.0</modelVersion>
+  <parent>
+    <groupId>com.wellpoint.microservices</groupId>
+    <artifactId>otherservices</artifactId>
+    <version>0.0.1</version>
+  </parent>
+  <artifactId>anthem-otherservices-dependencies</artifactId>
+  <packaging>pom</packaging>
+  <dependencyManagement>
+		<dependencies>
+			<dependency>
+				<groupId>com.wellpoint.microservices</groupId>
+				<artifactId>claimant-service</artifactId>
+				<version>${project.version}</version>
+			</dependency>
+			<dependency>
+				<groupId>com.wellpoint.microservices</groupId>
+				<artifactId>hello-world</artifactId>
+				<version>${project.version}</version>
+			</dependency>
+		</dependencies>
+	</dependencyManagement>
+  	<!-- 
+	<distributionManagement>
+		<repository>
+			<id>${distribution.management.release.id}</id>
+			<name>Spring Milestone Repository</name>
+			<url>${distribution.management.release.url}</url>
+		</repository>
+		<snapshotRepository>
+			<id>${distribution.management.release.id}</id>
+			<name>Spring Snapshot Repository</name>
+			<url>${distribution.management.snapshot.url}</url>
+		</snapshotRepository>
+	</distributionManagement>
+	 -->
+	<profiles>
+	<profile>
+			<id>spring</id>
+			<activation>
+				<activeByDefault>false</activeByDefault>
+			</activation>
+			<repositories>
+				<repository>
+					<id>spring-snapshots</id>
+					<name>Spring Snapshots</name>
+					<url>https://repo.spring.io/snapshot</url>
+					<snapshots>
+						<enabled>true</enabled>
+					</snapshots>
+				</repository>
+				<repository>
+					<id>spring-milestones</id>
+					<name>Spring Milestones</name>
+					<url>https://repo.spring.io/milestone</url>
+					<snapshots>
+						<enabled>false</enabled>
+					</snapshots>
+				</repository>
+				<repository>
+					<id>spring-releases</id>
+					<name>Spring Releases</name>
+					<url>https://repo.spring.io/release</url>
+					<snapshots>
+						<enabled>false</enabled>
+					</snapshots>
+				</repository>
+			</repositories>
+			<pluginRepositories>
+				<pluginRepository>
+					<id>spring-snapshots</id>
+					<name>Spring Snapshots</name>
+					<url>https://repo.spring.io/snapshot</url>
+					<snapshots>
+						<enabled>true</enabled>
+					</snapshots>
+				</pluginRepository>
+				<pluginRepository>
+					<id>spring-milestones</id>
+					<name>Spring Milestones</name>
+					<url>https://repo.spring.io/milestone</url>
+					<snapshots>
+						<enabled>false</enabled>
+					</snapshots>
+				</pluginRepository>
+				<pluginRepository>
+					<id>spring-releases</id>
+					<name>Spring Releases</name>
+					<url>https://repo.spring.io/release</url>
+					<snapshots>
+						<enabled>false</enabled>
+					</snapshots>
+				</pluginRepository>
+			</pluginRepositories>
+		</profile>
+	</profiles>
+</project>

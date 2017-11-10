@@ -1,0 +1,11 @@
+{
+  "claimant": [
+      {
+        "claimantId": "119bbacd-9c03-4044-867f-4c26e8f715f6",
+        "firstName": "Arthur",
+        "lastName": "Portas",
+        "email": "Arthur@test.com",
+	"age": 45
+      }
+    ]
+}

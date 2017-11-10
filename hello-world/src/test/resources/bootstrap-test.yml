@@ -1,0 +1,22 @@
+spring:
+  application:
+    name: helloworld
+  cloud:
+    config:
+      enabled: false
+      discovery:
+        enabled: false
+        serviceId: helloworld
+      failFast: true
+  jackson:
+    time-zone: UTC
+stubrunner:
+  idsToServiceIds:
+    claimant-service: claimantservice
+eureka:
+  client:
+    enabled: false
+message: This is test enviornment for hello-world service
+claimantserver:
+  host: localhost
+  port: 8082

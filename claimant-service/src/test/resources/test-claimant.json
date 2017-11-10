@@ -1,0 +1,39 @@
+{
+  "claimant": [
+      {
+        "claimantId": "119bbacd-9c03-4044-867f-4c26e8f715f6",
+        "firstName": "Arthur",
+        "lastName": "Portas",
+        "email": "Arthur@test.com",
+	"age": 45
+      },
+      {
+        "claimantId": "f0f45a6f-77af-44a6-b872-8ee139534afb",
+        "firstName": "John",
+        "lastName": "Doe",
+        "email": "John@test.com",
+	"age": 46
+      },
+      {
+        "claimantId": "a85e5ed7-1a63-4bd9-b460-0ecb0cc1327e",
+        "firstName": "Pamela",
+        "lastName": "Anderson",
+        "email": "pamela@test.com",
+	"age": 47
+      },
+      {
+        "claimantId": "6d876643-c60b-4fd9-a7ae-be4df2b0d466",
+        "firstName": "Soraia",
+        "lastName": "Chaves",
+        "email": "Soraia@test.com",
+	"age": 48
+      },
+      {
+        "claimantId": "2a734390-673f-490a-aed1-c0bb580847a6",
+        "firstName": "Ines",
+        "lastName": "Branco",
+        "email": "Ines@test.com",
+	"age": 49
+      }
+    ]
+}

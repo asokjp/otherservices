@@ -1,0 +1,15 @@
+spring:
+  application:
+    name: claimantservice
+  cloud:
+    config:
+      enabled: false
+      discovery:
+        enabled: false
+        serviceId: claimantservice
+      failFast: true
+  jackson:
+    time-zone: UTC
+eureka:
+  client:
+    enabled: false

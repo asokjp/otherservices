@@ -1,0 +1,72 @@
+##################################################################################################
+# helloworld service
+##################################################################################################
+apiVersion: v1
+kind: Service
+metadata:
+  name: helloworld
+  labels:
+    app: helloworld
+spec:
+  ports:
+  - port: 8081
+    name: http
+  selector:
+    app: helloworld
+---
+apiVersion: extensions/v1beta1
+kind: Deployment
+metadata:
+  name: helloworld-v4
+spec:
+  replicas: 1
+  template:
+    metadata:
+      labels:
+        app: helloworld
+        version: v4
+    spec:
+      containers:
+      - name: helloworld
+        image: gcr.io/serious-hold-175505/hello-world-v4
+        imagePullPolicy: IfNotPresent
+        env:
+        - name: SPRING_PROFILES_ACTIVE
+          value: dev
+        ports:
+        - containerPort: 8081
+---
+###########################################################################
+# Ingress resource (gateway)
+##########################################################################
+apiVersion: extensions/v1beta1
+kind: Ingress
+metadata:
+  name: gateway
+  annotations:
+    kubernetes.io/ingress.class: "istio"
+spec:
+  rules:
+  - http:
+      paths:
+      - path: /helloWorld/*
+        backend:
+          serviceName: helloworld
+          servicePort: 8081
+      - path: /helloWorld/.*
+        backend:
+          serviceName: helloworld
+          servicePort: 8081
+      - path: /message1
+        backend:
+          serviceName: helloworld
+          servicePort: 8081
+      - path: /claimant
+        backend:
+          serviceName: claimantservice
+          servicePort: 8082
+      - path: /message
+        backend:
+          serviceName: claimantservice
+          servicePort: 8082    
+---

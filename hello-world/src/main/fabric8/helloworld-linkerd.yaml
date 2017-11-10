@@ -1,0 +1,195 @@
+##################################################################################################
+# helloworld service
+##################################################################################################
+---
+apiVersion: v1
+kind: ReplicationController
+metadata:
+  name: helloworld
+spec:
+  replicas: 1
+  selector:
+    app: helloworld
+  template:
+    metadata:
+      labels:
+        app: helloworld
+    spec:
+      dnsPolicy: ClusterFirst
+      containers:
+      - name: service
+        image: gcr.io/serious-hold-175505/hello-world-v4
+        env:
+        - name: NODE_NAME
+          valueFrom:
+            fieldRef:
+              fieldPath: spec.nodeName
+        - name: POD_IP
+          valueFrom:
+            fieldRef:
+              fieldPath: status.podIP
+        - name: http_proxy
+          value: $(NODE_NAME):4140
+        - name: SPRING_PROFILES_ACTIVE
+          value: dev
+        args:
+        - "-addr=:8081"
+        - "-text=helloworld"
+        - "-target=claimantservice" 
+        ports:
+        - name: service
+          containerPort: 8081
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: helloworld
+spec:
+  selector:
+    app: helloworld
+  clusterIP: None
+  ports:
+  - name: http
+    port: 8081
+---
+apiVersion: v1
+kind: ReplicationController
+metadata:
+  name: claimantservice
+spec:
+  replicas: 1
+  selector:
+    app: claimantservice
+  template:
+    metadata:
+      labels:
+        app: claimantservice
+    spec:
+      dnsPolicy: ClusterFirst
+      containers:
+      - name: service
+        image: gcr.io/serious-hold-175505/claimant-service-v3
+        env:
+        - name: NODE_NAME
+          valueFrom:
+            fieldRef:
+              fieldPath: spec.nodeName
+        - name: POD_IP
+          valueFrom:
+            fieldRef:
+              fieldPath: status.podIP
+        - name: http_proxy
+          value: $(NODE_NAME):4140
+        - name: SPRING_PROFILES_ACTIVE
+          value: prod
+        - name: POD_IP
+          valueFrom:
+            fieldRef:
+              fieldPath: status.podIP
+        args:
+        - "-addr=:8082"
+        - "-text=claimantservice"
+        - "-target=configserver"
+        ports:
+        - name: service
+          containerPort: 8082
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: claimantservice
+spec:
+  selector:
+    app: claimantservice
+  clusterIP: None
+  ports:
+  - name: http
+    port: 8082
+---
+apiVersion: v1
+kind: ReplicationController
+metadata:
+  name: configserver
+spec:
+  replicas: 1
+  selector:
+    app: configserver
+  template:
+    metadata:
+      labels:
+        app: configserver
+    spec:
+      dnsPolicy: ClusterFirst
+      containers:
+      - name: service
+        image: gcr.io/serious-hold-175505/config-server-v1
+        env:
+        - name: NODE_NAME
+          valueFrom:
+            fieldRef:
+              fieldPath: spec.nodeName
+        - name: POD_IP
+          valueFrom:
+            fieldRef:
+              fieldPath: status.podIP
+        - name: http_proxy
+          value: $(NODE_NAME):4140
+        - name: POD_IP
+          valueFrom:
+            fieldRef:
+              fieldPath: status.podIP
+        - name: TARGET_CONFIG
+          value: configserver
+        ports:
+        - name: service
+          containerPort: 8888
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: configserver
+spec:
+  selector:
+    app: configserver
+  clusterIP: None
+  ports:
+  - name: http
+    port: 8888
+---
+###########################################################################
+# Ingress resource (gateway)
+##########################################################################
+apiVersion: extensions/v1beta1
+kind: Ingress
+metadata:
+  name: gateway
+  annotations:
+    kubernetes.io/ingress.class: "linkerd"
+spec:
+  backend:
+    serviceName: helloworld
+    servicePort: http
+  rules:
+  - http:
+      paths:
+      - path: /helloWorld/*
+        backend:
+          serviceName: helloworld
+          servicePort: http
+      - path: /helloWorld/.*
+        backend:
+          serviceName: helloworld
+          servicePort: http
+      - path: /message1
+        backend:
+          serviceName: helloworld
+          servicePort: http
+      - path: /claimant
+        backend:
+          serviceName: claimantservice
+          servicePort: http
+      - path: /message
+        backend:
+          serviceName: claimantservice
+          servicePort: http    
+---

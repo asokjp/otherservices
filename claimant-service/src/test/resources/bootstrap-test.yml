@@ -1,0 +1,30 @@
+spring:
+  application:
+    name: claimantservice
+  autoconfigure:
+    exclude:
+          org.springframework.boot.autoconfigure.mongo.embedded.EmbeddedMongoAutoConfiguration
+  data:
+    mongodb:
+      port: 0
+  cloud:
+    config:
+      enabled: false
+      discovery:
+        enabled: false
+        serviceId: claimantservice
+      failFast: true
+    kubernetes:
+      secrets:
+        enabled: true
+        paths: /etc/mongo/config
+  jackson:
+    time-zone: UTC
+eureka:
+  client:
+    enabled: false
+message: This is test enviornment for Claimant service
+trust:
+  file:
+    name: mongo-trust.jks
+    password: NA

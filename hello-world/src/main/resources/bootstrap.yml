@@ -1,0 +1,9 @@
+spring:
+  application:
+    name: helloworld
+  cloud:
+    config:
+      uri: http://configserver:8888
+      name: helloworld
+server:
+  port: 8081

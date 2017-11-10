@@ -1,0 +1,57 @@
+##################################################################################################
+# claimant service
+##################################################################################################
+apiVersion: v1
+kind: Service
+metadata:
+  name: claimantservice
+  labels:
+    app: claimantservice
+spec:
+  ports:
+  - port: 8082
+    name: http
+  selector:
+    app: claimantservice
+---
+apiVersion: extensions/v1beta1
+kind: Deployment
+metadata:
+  name: claimantservice-v3
+spec:
+  replicas: 1
+  template:
+    metadata:
+      labels:
+        app: claimantservice
+        version: v3
+    spec:
+      containers:
+      - name: claimantservice
+        image: gcr.io/serious-hold-175505/claimant-service-v3
+        imagePullPolicy: IfNotPresent
+        env:
+        - name: SPRING_PROFILES_ACTIVE
+          value: prod      
+        ports:
+        - containerPort: 8082
+        volumeMounts:
+        - name: mongoconfig
+          mountPath: /etc/mongo/config
+      volumes:
+      - name: mongoconfig
+        secret:
+          secretName: mongosecret 
+---
+apiVersion: v1
+kind: Service
+metadata:
+ name: mongodb
+spec:
+ type: ExternalName
+ externalName: 130.211.185.172
+ ports:
+ - port: 27017
+   # important to set protocol name
+   name: mongodb
+---
