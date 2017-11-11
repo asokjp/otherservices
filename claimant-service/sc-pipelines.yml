@@ -1,0 +1,25 @@
+# This file describes which services are required by this application
+# in order for the smoke tests on the TEST environment and end to end tests
+# on the STAGE environment to pass
+
+# lowercase name of the environment
+
+test:
+  # list of required services
+  services:
+    - type: claim-contracts
+      name: claim-contracts
+    - type: anthem-microservices-starter-build
+      name: anthem-microservices-starter-build
+stage:
+  services:
+    - type: claim-contracts
+      name: claim-contracts
+    - type: anthem-microservices-starter-build
+      name: anthem-microservices-starter-build
+prod:
+  services:
+    - type: claim-contracts
+      name: claim-contracts
+    - type: anthem-microservices-starter-build
+      name: anthem-microservices-starter-build

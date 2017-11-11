@@ -1,0 +1,137 @@
+apiVersion: extensions/v1beta1
+kind: Deployment
+metadata:
+  annotations: 
+    sidecar.istio.io/status: injected-version-root@822a7ac3ca86-0.2.4-9c7c291eab0a522f8033decd0f5b031f5ed0e126
+  creationTimestamp: null
+  name: {{labelAppName}}
+spec:
+  replicas: 1
+  template:
+    metadata:
+      annotations:
+        sidecar.istio.io/status: injected-version-root@822a7ac3ca86-0.2.4-9c7c291eab0a522f8033decd0f5b031f5ed0e126
+      creationTimestamp: null
+      labels:
+        app: {{appName}}
+        version: {{version}}
+        name: {{appName}}
+    spec:
+      containers:
+      - name: {{containerName}}
+        image: {{dockerOrg}}/{{appName}}:{{version}}
+        imagePullPolicy: IfNotPresent
+        ports:
+        - containerPort: 8082
+        resources: {}
+      - args:
+        - proxy
+        - sidecar
+        - -v
+        - "2"
+        - --configPath
+        - /etc/istio/proxy
+        - --binaryPath
+        - /usr/local/bin/envoy
+        - --serviceCluster
+        - istio-proxy
+        - --drainDuration
+        - 45s
+        - --parentShutdownDuration
+        - 1m0s
+        - --discoveryAddress
+        - istio-pilot.istio-system:8080
+        - --discoveryRefreshDelay
+        - 30s
+        - --zipkinAddress
+        - zipkin.istio-system:9411
+        - --connectTimeout
+        - 10s
+        - --statsdUdpAddress
+        - istio-mixer.istio-system:9125
+        - --proxyAdminPort
+        - "15000"
+        env:
+        - name: POD_NAME
+          valueFrom:
+            fieldRef:
+              fieldPath: metadata.name
+        - name: POD_NAMESPACE
+          valueFrom:
+            fieldRef:
+              fieldPath: metadata.namespace
+        - name: INSTANCE_IP
+          valueFrom:
+            fieldRef:
+              fieldPath: status.podIP
+        - name: PORT
+          value: "8082"
+        - name: SYSTEM_PROPS # additional options to be passed to the running process
+          value: "{{systemProps}}"
+        - name: SPRING_PROFILES_ACTIVE
+          value: dev
+        livenessProbe:
+          httpGet:
+            path: /health
+            port: 8082
+          initialDelaySeconds: 30
+          periodSeconds: 3
+        readinessProbe:
+          httpGet:
+            path: /health
+            port: 8082
+          initialDelaySeconds: 30
+          periodSeconds: 3
+        image: docker.io/istio/proxy_debug:0.2.4
+        imagePullPolicy: IfNotPresent
+        name: istio-proxy
+        resources: {}
+        securityContext:
+          privileged: true
+          readOnlyRootFilesystem: false
+          runAsUser: 1337
+        volumeMounts:
+        - mountPath: /etc/istio/proxy
+          name: istio-envoy
+        - mountPath: /etc/certs/
+          name: istio-certs
+          readOnly: true
+      initContainers:
+      - args:
+        - -p
+        - "15001"
+        - -u
+        - "1337"
+        - -i
+        - 10.60.0.0/14,10.63.240.0/20
+        image: docker.io/istio/proxy_init:0.2.4
+        imagePullPolicy: IfNotPresent
+        name: istio-init
+        resources: {}
+        securityContext:
+          capabilities:
+            add:
+            - NET_ADMIN
+          privileged: true
+      - args:
+        - -c
+        - sysctl -w kernel.core_pattern=/etc/istio/proxy/core.%e.%p.%t && ulimit -c
+          unlimited
+        command:
+        - /bin/sh
+        image: alpine
+        imagePullPolicy: IfNotPresent
+        name: enable-core-dump
+        resources: {}
+        securityContext:
+          privileged: true
+      volumes:
+      - emptyDir:
+          medium: Memory
+          sizeLimit: "0"
+        name: istio-envoy
+      - name: istio-certs
+        secret:
+          optional: true
+          secretName: istio.default
+status: {}
